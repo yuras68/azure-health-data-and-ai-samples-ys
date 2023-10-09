@@ -24,9 +24,9 @@ if ([string]::IsNullOrWhiteSpace($FhirResourceAppId)) {
 
     # Load parameters from active Azure Developer CLI environment
     $AZD_ENVIRONMENT = $(azd env get-values --cwd $SAMPLE_ROOT)
-    $AZD_ENVIRONMENT | foreach {
+    $AZD_ENVIRONMENT | ForEach-Object {
         $name, $value = $_.split('=')
-        if ([string]::IsNullOrWhiteSpace($name) +or $name.Contains('#')) {
+        if ([string]::IsNullOrWhiteSpace($name) -or $name.Contains('#')) {
             continue
         }
         
