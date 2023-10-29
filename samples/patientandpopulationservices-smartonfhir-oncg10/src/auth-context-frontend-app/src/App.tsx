@@ -64,6 +64,7 @@ export const App: FC = () => {
     <MsalProvider instance={msalInstance}>
       <MsalAuthenticationTemplate
         interactionType={InteractionType.Redirect}
+        //interactionType={InteractionType.Popup}
         authenticationRequest={authRequest}
         errorComponent={AuthError}
         loadingComponent={AuthLoading}

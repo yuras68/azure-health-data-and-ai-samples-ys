@@ -23,9 +23,9 @@ if ([string]::IsNullOrWhiteSpace($FhirUrl) -or [string]::IsNullOrWhiteSpace($Fhi
 
     # Load parameters from active Azure Developer CLI environment
     $AZD_ENVIRONMENT = azd env get-values --cwd $SAMPLE_ROOT
-    $AZD_ENVIRONMENT | foreach {
+    $AZD_ENVIRONMENT | ForEach-Object {
         $name, $value = $_.split('=')
-        if ([string]::IsNullOrWhiteSpace($name) +or $name.Contains('#')) {
+        if ([string]::IsNullOrWhiteSpace($name) -or $name.Contains('#')) {
             continue
         }
         
@@ -67,5 +67,5 @@ Write-Host "Using token $access_token"
 $FilePath = "$SCRIPT_PATH/test-resources/V3.1.1_USCoreCompliantResources.json"
 az rest --uri $FhirUrl --method POST --body "@$FilePath" --headers "Authorization=Bearer $access_token" "Content-Type=application/json"
 
-$FilePath = "$SCRIPT_PATH/test-resources/CapabilityStatement-us-core-server.json"
-az rest --uri "$FhirUrl/CapabilityStatement/us-core-server" --method PUT --body "@$FilePath" --headers "Authorization=Bearer $access_token" "Content-Type=application/json"
+#$FilePath = "$SCRIPT_PATH/test-resources/CapabilityStatement-us-core-server.json"
+#az rest --uri "$FhirUrl/CapabilityStatement/us-core-server" --method PUT --body "@$FilePath" --headers "Authorization=Bearer $access_token" "Content-Type=application/json"
