@@ -40,12 +40,26 @@ $appObjectId = (az ad app show --id $FhirResourceAppId --query "id" --output tsv
 $extensionUrl = "$graphEndpoint/applications/$appObjectId/extensionProperties"
 $token = $(az account get-access-token --resource-type ms-graph --query accessToken --output tsv)
 
+<# $body = "{
+    `"name`": `"fhirUser`",
+    `"dataType`": `"String`",
+    `"targetObjects`": [`"User`",`"Application`"]
+}" #>
+
 $body = "{
     `"name`": `"fhirUser`",
     `"dataType`": `"String`",
     `"targetObjects`": [`"User`"]
 }"
 
+
 Invoke-RestMethod -Uri $extensionUrl -Headers @{Authorization = "Bearer $token"} -Method Post -Body $body -ContentType application/json
+#Invoke-RestMethod -Uri ($extensionUrl + '/264ba74f-0390-4e64-91ee-bd663f92fd07') -Headers @{Authorization = "Bearer $token"} -Method Delete -Body $body -ContentType application/json
+
+# Graph Explorer data (patch):
+<# {
+    "extension_dd6e116ba77b4085ab2174540de84991_fhirUser": "Practitioner/a47e853f-f70a-44c5-b4d5-6849c3e6d476"
+}
+ #>
 
 Write-Host "Done."
