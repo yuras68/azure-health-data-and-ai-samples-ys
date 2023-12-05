@@ -20,6 +20,8 @@ namespace SMARTCustomOperations.Export.Filters
         private readonly ExportCustomOperationsConfig _configuration;
         private readonly string _id;
 
+        private const string TemplateType = "AllergyIntolerance";
+
         public CheckExportJobOutputFilter(ILogger<CheckExportJobOutputFilter> logger, ExportCustomOperationsConfig configuration)
         {
             _logger = logger;
@@ -52,8 +54,9 @@ namespace SMARTCustomOperations.Export.Filters
                 var jBody = JObject.Parse(context.ContentString);
 
                 jBody["requiresAccessToken"] = true;
+                var outputArray = (JArray)jBody.SelectToken("output")!;
 
-                foreach (JToken output in (JArray)jBody.SelectToken("output")!)
+                foreach (JToken output in outputArray)
                 {
                     // Get the orig URL of the output array item
                     var outputObj = (JObject)output;
@@ -70,6 +73,19 @@ namespace SMARTCustomOperations.Export.Filters
 
                     outputObj["url"] = BuildNewExportFileUri(_configuration.ApiManagementHostName!, _configuration.ApiManagementFhirPrefex, origUrl.LocalPath);
                 }
+                _logger?.LogInformation("Custom code for {Name} - start", Name);
+                var template = (JObject) ((JArray)jBody.SelectToken("output")!).Where(o => o["type"]!.ToString() == TemplateType).First();
+                
+                var practitioner = MakeSingleEntry(template, "Practitioner");
+                outputArray.Add(practitioner);
+
+                var device = MakeSingleEntry(template, "Device");
+                outputArray.Add(device);
+
+                var organization = MakeSingleEntry(template, "Organization");
+                outputArray.Add(organization);
+
+                _logger?.LogInformation("Custom code for {Name} - end", Name);
 
                 context.ContentString = jBody.ToString();
             }
@@ -80,8 +96,21 @@ namespace SMARTCustomOperations.Export.Filters
                 OnFilterError?.Invoke(this, error);
                 return Task.FromResult(context.SetContextErrorBody(error, _configuration.Debug));
             }
-
+            // ys 2023-12-05 - modify the content (add the Device, Org, and Practitioner elements.
+            
             return Task.FromResult(context);
+        }
+
+        // ys - 2023-12-05 - making the new entries out of the TemplateType entry
+        private JObject MakeSingleEntry(JObject template, string type)
+        {
+            var origUrl = new Uri(template["url"]!.ToString());
+            var newUrl = origUrl.LocalPath.Replace(TemplateType, type);
+            var result = new JObject();
+            result["type"] = type;
+            result["count"] = template["count"];
+            result["url"] = BuildNewExportFileUri(_configuration.ApiManagementHostName!, _configuration.ApiManagementFhirPrefex, newUrl);
+            return result;
         }
 
         // Maps the url segment to our proxied storage endpoint
