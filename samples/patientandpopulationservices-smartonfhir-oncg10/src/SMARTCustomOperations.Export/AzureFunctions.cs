@@ -25,6 +25,7 @@ namespace SMARTCustomOperations.Export
         public async Task<HttpResponseData> RunGroupExportFunction([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "Group/{logicalId}/$export")] HttpRequestData req)
         {
             _logger.LogInformation("StartGroupExport function pipeline started.");
+            //_logger.LogInformation("StartGroupExport headers: " + string.Join(';', req!.Headers.Select( h=> $"{h.Key}={string.Join(',',h.Value.ToArray())}")));
             var result = await _pipeline.ExecuteAsync(req);
 
             return result;

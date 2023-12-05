@@ -34,7 +34,7 @@ namespace SMARTCustomOperations.AzureAuth.Filters
         public event EventHandler<FilterErrorEventArgs>? OnFilterError;
 #pragma warning restore CS0067 // Needed to implement interface.
 
-        public string Name => nameof(AuthorizeInputFilter);
+        public string Name => nameof(TokenOutputFilter);
 
         public StatusType ExecutionStatusType => StatusType.Normal;
 
@@ -74,6 +74,19 @@ namespace SMARTCustomOperations.AzureAuth.Filters
                     }
                 }
                 
+                // yuriy
+                if (tokenResponse.AppId is not null)
+                {
+                    var cachedLaunchInfo = await _cacheService.GetLaunchCacheObjectAsync(tokenResponse.AppId);
+
+                    if (cachedLaunchInfo?.UserId == "scope")
+                    {
+                        _logger?.LogInformation($"Background export application {tokenResponse.AppId} is given the {cachedLaunchInfo.Launch} scope.", tokenResponse.AppId, cachedLaunchInfo.Launch);
+                        tokenResponse.AddCustomProperty(cachedLaunchInfo.UserId, cachedLaunchInfo.Launch);
+                        await _cacheService.RemoveLaunchCacheObjectAsync(tokenResponse.AppId);
+                    }
+                }
+
                 context.ContentString = tokenResponse.ToString();
             }
             catch (Exception ex)

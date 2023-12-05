@@ -121,7 +121,7 @@ function useProvideAppContext() {
 
   const handleEhrLaunch = async (userId: string | undefined, launch: string | undefined) => {
   // see if user is launching from EHR and has launch parameter
-  if (launch == undefined || userId == undefined)
+  if (launch === undefined || userId === undefined)
   {
     return;
   }
@@ -151,7 +151,7 @@ function useProvideAppContext() {
 }
 
 const setAppConsentInfoIfEmpty = async () => {
-  if (applicationId != undefined && requestedScopes != undefined && appConsentInfo == undefined && error == undefined)
+  if (applicationId !== undefined && requestedScopes !== undefined && appConsentInfo === undefined && error === undefined)
   {
     try {
       const info = await getAppConsentInfo(applicationId, requestedScopes);
@@ -212,7 +212,9 @@ const updateScopesWhereNeeded = async (modifiedAuthInfo: AppConsentInfo) : Promi
         }
 
         retryAttempt++;
-        await sleep(1000 * retryAttempt);
+          //await sleep(1000 * retryAttempt);
+          // ys:  changing the delay between attempts as it is recommended to wait ~ 30 sec
+          await sleep(3000 * retryAttempt);
       }
       catch (err: any) {
         displayError(err.message);
@@ -256,7 +258,7 @@ useEffect(() => {
       (async () => {
         const account = msal.instance.getActiveAccount();
 
-        if (account && user == undefined)
+        if (account && user === undefined)
         {
           setUser({
             id: account?.localAccountId || "",

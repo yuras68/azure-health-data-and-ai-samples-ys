@@ -19,6 +19,7 @@ namespace SMARTCustomOperations.AzureAuth.UnitTests.Filters
         private static ILogger<TokenInputFilter> _logger = Substitute.For<ILogger<TokenInputFilter>>();
         private static string _testClientAssertion = "eyJ0eXAiOiJKV1QiLCJraWQiOiJhZmIyN2MyODRmMmQ5Mzk1OWMxOGZhMDMyMGUzMjA2MCIsImFsZyI6IkVTMzg0In0.eyJpc3MiOiJkZW1vX2FwcF93aGF0ZXZlciIsInN1YiI6ImRlbW9fYXBwX3doYXRldmVyIiwiYXVkIjoiaHR0cHM6Ly9zbWFydC5hcmdvLnJ1bi92L3I0L3NpbS9leUp0SWpvaU1TSXNJbXNpT2lJeElpd2lhU0k2SWpFaUxDSnFJam9pTVNJc0ltSWlPaUk0TjJFek16bGtNQzA0WTJGbExUUXhPR1V0T0Rsak55MDROalV4WlRaaFlXSXpZellpZlEvYXV0aC90b2tlbiIsImp0aSI6ImQ4MDJiZDcyY2ZlYTA2MzVhM2EyN2IwODE3YjgxZTQxZTBmNzQzMzE4MTg4OTM4YjAxMmMyMDM2NmJkZmU4YTEiLCJleHAiOjE2MzM1MzIxMzR9.eHUtXmppOLIMAfBM4mFpcgJ90bDNYWQpkm7--yRS2LY5HoXwr3FpqHMTrjhK60r5kgYGFg6v9IQaUFKFpn1N2Eyty62JWxvGXRlgEDbdX9wAAr8TeWnsAT_2orfpn6wz";
         private static string _testClientAssertionDecodedClientId = "demo_app_whatever";
+        private readonly ContextCacheService? _cacheService;
 
         private static AzureAuthOperationsConfig config = new()
         {
@@ -29,7 +30,7 @@ namespace SMARTCustomOperations.AzureAuth.UnitTests.Filters
         [Fact]
         public async Task GivenAClientConfidentialTokenRequest_WhenFilterExecuted_ThenRequestIsProperlyFormed()
         {
-            var filter = new TokenInputFilter(_logger, config, _backendAuthService);
+            var filter = new TokenInputFilter(_logger, config, _backendAuthService, _cacheService);
 
             OperationContext context = new();
             context.Request = new HttpRequestMessage();
@@ -56,7 +57,7 @@ namespace SMARTCustomOperations.AzureAuth.UnitTests.Filters
         [Fact]
         public async Task GivenAPublicTokenRequest_WhenFilterExecuted_ThenRequestIsProperlyFormed()
         {
-            var filter = new TokenInputFilter(_logger, config, _backendAuthService);
+            var filter = new TokenInputFilter(_logger, config, _backendAuthService, _cacheService);
 
             OperationContext context = new();
             context.Request = new HttpRequestMessage();
@@ -83,7 +84,7 @@ namespace SMARTCustomOperations.AzureAuth.UnitTests.Filters
         [Fact]
         public async Task GivenARefreshTokenRequest_WhenFilterExecuted_ThenRequestIsProperlyFormed()
         {
-            var filter = new TokenInputFilter(_logger, config, _backendAuthService);
+            var filter = new TokenInputFilter(_logger, config, _backendAuthService, _cacheService);
 
             OperationContext context = new();
             context.Request = new HttpRequestMessage();
@@ -110,7 +111,7 @@ namespace SMARTCustomOperations.AzureAuth.UnitTests.Filters
         [Fact]
         public async Task GivenABackendServiceTokenRequest_WhenFilterExecuted_ThenRequestIsProperlyFormed()
         {
-            var filter = new TokenInputFilter(_logger, config, _backendAuthService);
+            var filter = new TokenInputFilter(_logger, config, _backendAuthService, _cacheService);
 
             var requestContent = new List<KeyValuePair<string, string>>()
             {

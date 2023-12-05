@@ -24,18 +24,20 @@ namespace SMARTCustomOperations.AzureAuth.Filters
         private readonly AzureAuthOperationsConfig _configuration;
         private readonly string _id;
         private readonly IAsymmetricAuthorizationService _asymmetricAuthorizationService;
+        private readonly ContextCacheService? _cacheService;
 
-        public TokenInputFilter(ILogger<TokenInputFilter> logger, AzureAuthOperationsConfig configuration, IAsymmetricAuthorizationService asymmetricAuthorizationService)
+        public TokenInputFilter(ILogger<TokenInputFilter> logger, AzureAuthOperationsConfig configuration, IAsymmetricAuthorizationService asymmetricAuthorizationService, ContextCacheService cacheService)
         {
             _logger = logger;
             _configuration = configuration;
             _id = Guid.NewGuid().ToString();
             _asymmetricAuthorizationService = asymmetricAuthorizationService;
+            _cacheService = cacheService;
         }
 
         public event EventHandler<FilterErrorEventArgs>? OnFilterError;
 
-        public string Name => nameof(AuthorizeInputFilter);
+        public string Name => nameof(TokenInputFilter);
 
         public StatusType ExecutionStatusType => StatusType.Normal;
 
@@ -85,6 +87,10 @@ namespace SMARTCustomOperations.AzureAuth.Filters
             // Azure AD does not support bare JWKS auth or 384 JWKS auth. We must convert to an associated client secret flow.
             if (tokenContext.GetType() == typeof(BackendServiceTokenContext))
             {
+                if (_cacheService != null)
+                {
+                    await _cacheService.SetLaunchCacheObjectAsync(tokenContext.ClientId, new LaunchCacheObject { UserId = "scope", Launch = "system/*.read" });
+                }
                 var castTokenContext = (BackendServiceTokenContext)tokenContext;
                 context = await HandleBackendService(context, castTokenContext);
             }

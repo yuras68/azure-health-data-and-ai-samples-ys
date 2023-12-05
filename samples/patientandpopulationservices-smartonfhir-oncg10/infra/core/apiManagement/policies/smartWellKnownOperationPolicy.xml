@@ -48,7 +48,9 @@
                 "permission-offline",
                 "context-banner",
                 "context-style",
-                "permission-user"
+                "permission-user",
+                "authorize-post",
+                "permission-v2"
             ]
         }</set-body>
 		<set-header name="Content-Type" exists-action="override">

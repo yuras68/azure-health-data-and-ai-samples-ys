@@ -27,7 +27,7 @@ export const App: FC = () => {
 // Check if there are already accounts in the browser session
   // If so, set the first account as the active account
   const accounts = msalInstance.getAllAccounts();
-  if (accounts && accounts.length == 0) {
+  if (accounts && accounts.length === 0) {
     console.log("no account")
   } else if (accounts && accounts.length > 1)
   {
@@ -46,7 +46,7 @@ export const App: FC = () => {
       const authResult = event.payload as AuthenticationResult;
       msalInstance.setActiveAccount(authResult.account);       
     }
-    else if (event.eventType == EventType.LOGIN_FAILURE)
+    else if (event.eventType === EventType.LOGIN_FAILURE)
     {
       console.log(event);
     }

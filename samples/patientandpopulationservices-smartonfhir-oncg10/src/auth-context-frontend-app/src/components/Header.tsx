@@ -32,7 +32,8 @@ const Header: FC = (): ReactElement => {
         <Stack horizontal>
             <Stack horizontal styles={titleStyle}>
                 <FontIcon aria-label="Check" iconName="Calories" className={logoIconClass} />
-                <Text variant="xxLarge">Sample Auth Context Frontend App</Text>
+                {/*<Text variant="xxLarge">Sample Auth Context Frontend App</Text>*/}
+                <Text variant="xxLarge">FHIR Permissions Manager</Text>
             </Stack>
         </Stack>
     );
