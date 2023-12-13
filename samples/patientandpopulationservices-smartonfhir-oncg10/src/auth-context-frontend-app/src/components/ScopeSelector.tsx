@@ -76,7 +76,9 @@ export const ScopeSelector: FC<ScopeSelectorProps> = (props: ScopeSelectorProps)
         if (consentInfo !== undefined) {
             const updateConsentInfo = {
                 ...consentInfo,
-                scopes: consentInfo!.scopes.map(x => { x.enabled = newValue; return x; }),
+                // yshalak - some scopes should not be "unconsented"
+                //scopes: consentInfo!.scopes.map(x => { x.enabled = newValue; return x; }),
+                scopes: consentInfo!.scopes.map(x => { x.enabled = newValue || x.name.includes('fhirUser') || x.name.includes('launch') || x.name.includes('openid'); return x; }),
             };
             setConsentInfo(updateConsentInfo);
         }
@@ -126,7 +128,7 @@ export const ScopeSelector: FC<ScopeSelectorProps> = (props: ScopeSelectorProps)
                                 <Text block variant="xLarge">Select Access:</Text>
                                 <PrimaryButton onClick={checkAll} text="Set all" ></PrimaryButton>
                                 <DefaultButton onClick={uncheckAll} text="Clear all" ></DefaultButton>
-                                <DefaultButton onClick={setLimited} text="Set Limited" ></DefaultButton>
+                                {/*<DefaultButton onClick={setLimited} text="Set Limited" ></DefaultButton>*/}
                             </Stack>
                             {consentInfo?.scopes.map((scope) => (
                                 //scope.hidden ? null : <Checkbox key={scope.id} label={scope.name} checked={scope.enabled} onChange={handleScopeChecked(scope)} />
