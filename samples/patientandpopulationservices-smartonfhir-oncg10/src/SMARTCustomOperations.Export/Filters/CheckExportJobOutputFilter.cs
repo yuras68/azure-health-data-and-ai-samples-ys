@@ -76,13 +76,13 @@ namespace SMARTCustomOperations.Export.Filters
                 _logger?.LogInformation("Custom code for {Name} - start", Name);
                 var template = (JObject) ((JArray)jBody.SelectToken("output")!).Where(o => o["type"]!.ToString() == TemplateType).First();
                 
-                var practitioner = MakeSingleEntry(template, "Practitioner");
+                var practitioner = MakeSingleEntry(template, "Practitioner", 6);
                 outputArray.Add(practitioner);
 
-                var device = MakeSingleEntry(template, "Device");
+                var device = MakeSingleEntry(template, "Device", 3);
                 outputArray.Add(device);
 
-                var organization = MakeSingleEntry(template, "Organization");
+                var organization = MakeSingleEntry(template, "Organization", 6);
                 outputArray.Add(organization);
 
                 _logger?.LogInformation("Custom code for {Name} - end", Name);
@@ -102,14 +102,12 @@ namespace SMARTCustomOperations.Export.Filters
         }
 
         // ys - 2023-12-05 - making the new entries out of the TemplateType entry
-        private JObject MakeSingleEntry(JObject template, string type)
+        private JObject MakeSingleEntry(JObject template, string type, int count)
         {
-            var origUrl = new Uri(template["url"]!.ToString());
-            var newUrl = origUrl.LocalPath.Replace(TemplateType, type);
             var result = new JObject();
             result["type"] = type;
-            result["count"] = template["count"];
-            result["url"] = BuildNewExportFileUri(_configuration.ApiManagementHostName!, _configuration.ApiManagementFhirPrefex, newUrl);
+            result["url"] = template["url"]!.ToString().Replace(TemplateType, type);
+            result["count"] = count;
             return result;
         }
 

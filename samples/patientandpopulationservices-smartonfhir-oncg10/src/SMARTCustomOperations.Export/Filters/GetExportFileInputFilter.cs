@@ -62,6 +62,7 @@ namespace SMARTCustomOperations.Export.Filters
                     return context.SetContextErrorBody(error, _configuration.Debug);
                 }
 
+                _logger?.LogInformation("In {Name}. Attempting to get {blobPathInfo.Item2}", Name, blobPathInfo.Item2);
                 context.Content = await _exportFileService.GetContent(blobPathInfo.Item1, blobPathInfo.Item2);
 
                 // Inform the pipeline to skip the binding
